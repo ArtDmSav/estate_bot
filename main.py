@@ -4,8 +4,9 @@ from telethon.sync import TelegramClient
 from telethon.tl.functions.messages import GetHistoryRequest
 
 import city
-import mysql_message_db
+import create_db
 import price
+import sqlite_message_db
 import w_csv_data
 
 # Считываем учетные данные
@@ -32,10 +33,14 @@ counter = 0
 clean_counter = 0
 price_list = []
 price_min = 5  # костыль
-price_max = 999000  # костыль
+price_max = 999999  # костыль
 find_city = 'Пафос'  # костыль
 target_group = 'estatecyprus'  # костыль
 flag_1 = True
+
+# Создаем базу данных и таблицы
+create_db.create_lots()
+create_db.create_users()
 
 while True:
     history = client(GetHistoryRequest(
@@ -78,8 +83,8 @@ while True:
                 except AttributeError:  # ошибка преобразования к lower
                     continue
                 # Записываем необходимые данные в таблицу SQL
-                mysql_message_db.write(message.date, citys, pric, message.id, message.chat_id)
-
+                ####mysql_message_db.write(message.date, citys, pric, message.id, message.chat_id)
+                sqlite_message_db.write(message.date, citys, pric, message.id, message.chat_id)
                 # Выводим данные о сообщении для ручного чека
                 print("city = ", citys)
                 print("data time = ", message.date)
@@ -94,4 +99,6 @@ while True:
     # break
 # Выводим таблицу SQL для ручного чека
 # mysql_message_db.table_view()
+sqlite_message_db.table_view()
+
 print("Парсинг сообщений группы успешно выполнен.")  # Сообщение об удачном парсинге чата.

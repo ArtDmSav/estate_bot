@@ -14,7 +14,7 @@ def create_lots():
                 with connect:
                     connect.execute("""
                         CREATE TABLE lots (
-                            id INTEGER PRIMARY KEY AUTO_INCREMENT,
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
                             city VARCHAR(20),
                             price INTEGER,
                             date DATETIME,
@@ -36,8 +36,8 @@ def create_users():
                 # создаём таблицу для товаров
                 with connect:
                     connect.execute("""
-                        CREATE TABLE lots (
-                            id INTEGER PRIMARY KEY AUTO_INCREMENT,
+                        CREATE TABLE users (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
                             city VARCHAR(20),
                             min_price INTEGER,
                             max_price INTEGER,
