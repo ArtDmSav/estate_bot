@@ -1,50 +1,57 @@
 import configparser
+import logging
 
 from telethon.sync import TelegramClient
 from telethon.tl.functions.messages import GetHistoryRequest
 
-import city
+import city_parsing
 import create_db
-import price
+import price_parsing
 import sqlite_message_db
-import w_csv_data
 
-# Считываем учетные данные
+# Write logs
+logging.basicConfig(level=logging.DEBUG, filename='main_estate.log',
+                    format='%(levelname)s (%(asctime)s): %(message)s (Line: %(lineno)d) [%(filename)s]',
+                    datefmt='%d/%m/%Y %I:%M:%S', encoding='UTF-8', filemode='w'
+                    )
+logging.warning('warning')
+logging.critical('critical')
+logging.debug('debug')
+logging.info('info')
+logging.error('error')
+
+# Read config file
 config = configparser.ConfigParser()
 config.read("config.ini")
 
-# Присваиваем значения внутренним переменным
-api_id = config['Telegram']['api_id']
+# Assign data from file
+api_id = int(config['Telegram']['api_id'])
 api_hash = config['Telegram']['api_hash']
 phone = config['Telegram']['username']
 
-# Запускаем клиента
+# Start telegram client by telethon
 client = TelegramClient(phone, api_id, api_hash)
 client.start()
 
-# Задаем переменные
-all_messages = []
+# Set data
 offset_id = 0
 limit = 100
-total_messages = 0
-total_count_limit = 0
+total_messages = 0  # what is it param?
+total_count_limit = 0  # what is it param?
 end_id = 0
 counter = 0
 clean_counter = 0
-price_list = []
-price_min = 5  # костыль
-price_max = 999999  # костыль
-find_city = 'Пафос'  # костыль
-target_group = 'estatecyprus'  # костыль
+target_group = 't.me/estatecyprus'
 flag_1 = True
 
-# Создаем базу данных и таблицы
+# Create database and tables
 create_db.create_lots()
 create_db.create_users()
 
+# Start telethon body
 while True:
     history = client(GetHistoryRequest(
-        peer=target_group,
+        peer=target_group,  # Don't warn ing, it's OK
         offset_id=offset_id,
         offset_date=None,
         add_offset=0,
@@ -53,52 +60,50 @@ while True:
         min_id=end_id,
         hash=0
     ))
+
     if not history.messages:
         break
     messages = history.messages
 
     for message in messages:
-        if flag_1:  # сохраняем ид 1го полученого сообщения что бы в
-            end_id = message.id  # след итерации остановится на нем
+        if flag_1:  # save id first message. it's end id for next iteration
+            end_id = message.id
             flag_1 = False
             print('end id = ', end_id)
         counter += 1
-        if not message.message == '':  # отсееваем пустые сообщения (фото видео файлы)
+        if not message.message == '':  # skip message without text (skip photo, video message)
             clean_counter += 1
-            # Чекаем номер наш порядковый номер сообщения (из limit) и выводим наш реальный порядковый номер сообщения
-            # исключая пустые/фото/видео сообщения
+            # Print our count message number, and 'clean' message number (only message with text)
             print('________________________________________________ \n'
                   'counter = ', counter,
                   'clean_counter = ', clean_counter
                   )
-            # Вызываем функцию поиска цены в сообщении (переводим в нижний регист для удобства)
-            pric = price.f_price(message.message.lower())
-            if pric == -1:  # Если цены нет то переходим к следующему сообщению
+            # Call find price func in message (use low register for all text)
+            price = price_parsing.f_price(message.message.lower())
+            if price == -1:  # If we can't find price, we move to the next message
                 continue
 
-            if price_min <= pric <= price_max:  # Костыль Чек диапазона цены
-                print("price = ", pric, "€")
-                try:
-                    citys = city.parse(message.message.lower())  # при закреплении сообщения в группе
-                except AttributeError:  # ошибка преобразования к lower
-                    continue
-                # Записываем необходимые данные в таблицу SQL
-                ####mysql_message_db.write(message.date, citys, pric, message.id, message.chat_id)
-                sqlite_message_db.write(message.date, citys, pric, message.id, message.chat_id)
-                # Выводим данные о сообщении для ручного чека
-                print("city = ", citys)
-                print("data time = ", message.date)
-                print(message.id)
-                print(message.message)
+            print("price = ", price, "€")
+            try:
+                city = city_parsing.parse(message.message.lower())
+            except AttributeError:  # Catch transformation to low error (debug)
+                print(AttributeError)
+                continue
+            # Add date to database
+            sqlite_message_db.write(message.date, city, price, message.id, message.chat_id)
+            # Print date for manual check (debug)
+            print("city = ", city)
+            print("data time = ", message.date)
+            print(message.id)
+            print(message.message)
 
-                # Косыль Записываем необходимые данные в CSV формате
-                w_csv_data.write_csv(message.date, citys, pric, message.id, message.chat_id)
-    # offset_id = messages[len(messages) - 1].id                 #берет ид предпоследнего сообщения хз зачем
-    # print('\noffset_id = ', offset_id)
-    # if total_count_limit != 0 and total_messages >= total_count_limit:
-    # break
-# Выводим таблицу SQL для ручного чека
-# mysql_message_db.table_view()
+    # WHAT IS IT? HOW IT WORK? I MUST UNDERSTAND WHAT I WRITE =), BUT IT LATER
+    offset_id = messages[len(messages) - 1].id
+    print('\noffset_id = ', offset_id)
+    if total_count_limit != 0 and total_messages >= total_count_limit:
+        break
+
+# Print table for manual check (debug)
 sqlite_message_db.table_view()
 
-print("Парсинг сообщений группы успешно выполнен.")  # Сообщение об удачном парсинге чата.
+print("Парсинг сообщений группы успешно выполнен.")  # Message for good parsing!
