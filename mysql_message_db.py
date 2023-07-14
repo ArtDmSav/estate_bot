@@ -1,4 +1,12 @@
+import configparser
+
 import pymysql.cursors
+
+# Считываем учетные данные
+config = configparser.ConfigParser()
+config.read("config.ini")
+pas = config['SQL']['db_password']
+name = config['SQL']['db_name']
 
 
 def write(date='2023-03-25 22:54:40+00:00', city='lim', price=1000, message_id=224491,
@@ -6,8 +14,8 @@ def write(date='2023-03-25 22:54:40+00:00', city='lim', price=1000, message_id=2
 
     connect = pymysql.connect(host='localhost',
                               user='root',
-                              password='95706271Cy@',
-                              db='tg_db',
+                              password=pas,
+                              db=name,
                               charset='utf8mb4',
                               cursorclass=pymysql.cursors.DictCursor
                               )
@@ -25,8 +33,8 @@ def write(date='2023-03-25 22:54:40+00:00', city='lim', price=1000, message_id=2
 def table_view():
     connect = pymysql.connect(host='localhost',
                               user='root',
-                              password='95706271Cy@',
-                              db='tg_db',
+                              password=pas,
+                              db=name,
                               charset='utf8mb4',
                               cursorclass=pymysql.cursors.DictCursor
                               )

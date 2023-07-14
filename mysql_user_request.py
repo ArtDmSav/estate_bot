@@ -1,11 +1,19 @@
+import configparser
+
 import pymysql.cursors
+
+# Считываем учетные данные
+config = configparser.ConfigParser()
+config.read("config.ini")
+pas = config['SQL']['db_password']
+name = config['SQL']['db_name']
 
 
 def request(city='Лимассол', min_price=1000, max_price=2000, user_id='+79372416727'):
     connect = pymysql.connect(host='localhost',
                               user='root',
-                              password='95706271Cy@',
-                              db='tg_db',
+                              password=pas,
+                              db=name,
                               charset='utf8mb4',
                               cursorclass=pymysql.cursors.DictCursor
                               )

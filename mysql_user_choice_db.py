@@ -1,14 +1,22 @@
 # добавить проверку юзер ид на наличие в таблице
 # при наличии заменить на новые входные параметры
 # тк юзер ид = праймари кей
+import configparser
+
 import pymysql.cursors
+
+# Считываем учетные данные
+config = configparser.ConfigParser()
+config.read("config.ini")
+pas = config['SQL']['db_password']
+name = config['SQL']['db_name']
 
 
 def write(city="Лимассол", low_price=1000, max_price=2500, user_id='+79372416727'):
     # connection = pymysql.connect(host='localhost',
     #                              user='root',
-    #                              password='95706271Cy@',
-    #                              db='tg_db',
+    #                              password=pas,
+    #                              db=name,
     #                              charset='utf8mb4'
     #                              )
     #
@@ -25,8 +33,8 @@ def write(city="Лимассол", low_price=1000, max_price=2500, user_id='+793
 
     connect = pymysql.connect(host='localhost',
                               user='root',
-                              password='95706271Cy@',
-                              db='tg_db',
+                              password=pas,
+                              db=name,
                               charset='utf8mb4',
                               cursorclass=pymysql.cursors.DictCursor
                               )
@@ -42,8 +50,8 @@ def write(city="Лимассол", low_price=1000, max_price=2500, user_id='+793
 def table_view():
     connect = pymysql.connect(host='localhost',
                               user='root',
-                              password='95706271Cy@',
-                              db='tg_db',
+                              password=pas,
+                              db=name,
                               charset='utf8mb4',
                               cursorclass=pymysql.cursors.DictCursor
                               )
