@@ -4,6 +4,7 @@
 *.csv
 Group_list_for_parsing.txt
 .idea/
+*.db
 
 
 # Byte-compiled / optimized / DLL files
