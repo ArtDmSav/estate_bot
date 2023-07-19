@@ -41,6 +41,8 @@ def create_users():
                             city VARCHAR(20),
                             min_price INTEGER,
                             max_price INTEGER,
-                            user_id VARCHAR(20)
+                            user_id VARCHAR(20),
+                            active INTEGER(1),
+                            last_datatime DATATIME
                         );
                     """)

@@ -36,8 +36,6 @@ client.start()
 # Set data
 offset_id = 0
 limit = 100
-total_messages = 0  # what is it param?
-total_count_limit = 0  # what is it param?
 end_id = 0
 counter = 0
 clean_counter = 0
@@ -52,12 +50,14 @@ create_db.create_users()
 while True:
     history = client(GetHistoryRequest(
         peer=target_group,  # Don't warn ing, it's OK
-        offset_id=offset_id,
-        offset_date=None,
-        add_offset=0,
-        limit=limit,
+        offset_id=offset_id,  # Offset message ID (only messages previous to the given ID will be retrieved).Exclusive
+        offset_date=None,  # (datetime): Offset date (messages previous to this date will be retrieved). Exclusive
+        add_offset=0,  # (int): Additional message offset (all of the specified offsets + this offset = older messages)
+        limit=limit,  # (int | None, optional): Number of messages to be retrieved. Due to limitations with the API
+        # retrieving more than 3000 messages will take longer than half a minute (or even more based on
+        # previous calls).
         max_id=0,
-        min_id=end_id,
+        min_id=end_id,  # (int): All the messages with a lower (older) ID or equal to this will be excluded.
         hash=0
     ))
 
@@ -90,20 +90,12 @@ while True:
                 print(AttributeError)
                 continue
             # Add date to database
-            sqlite_message_db.write(message.date, city, price, message.id, message.chat_id)
+            sqlite_message_db.write_lots(message.date, city, price, message.id, message.chat_id)
             # Print date for manual check (debug)
             print("city = ", city)
             print("data time = ", message.date)
             print(message.id)
             print(message.message)
 
-    # WHAT IS IT? HOW IT WORK? I MUST UNDERSTAND WHAT I WRITE =), BUT IT LATER
-    offset_id = messages[len(messages) - 1].id
-    print('\noffset_id = ', offset_id)
-    if total_count_limit != 0 and total_messages >= total_count_limit:
-        break
-
 # Print table for manual check (debug)
-sqlite_message_db.table_view()
-
-print("Парсинг сообщений группы успешно выполнен.")  # Message for good parsing!
+# sqlite_message_db.table_view_lots()
