@@ -1,6 +1,7 @@
 import re
 
 
+# First searching price keywords
 def f_price(msg):
     r_str = r"((price)?(евро)?(cтоимость)?(цена)?(в)?(за)?(аренд[аы])?(euro)?(eur)? ?(мес)?(месяц)?[€\-💶💴:/]? ?" \
             r"\d{1,3}[\.',\s]?\d{3}" \
@@ -8,36 +9,33 @@ def f_price(msg):
             r"|((price)?(евро)?(cтоимость)?(цена)?(в)?(за)?(аренд[аы])?(euro)?(eur)? ?(мес)?(месяц)?[€\-💶💴:/]? ?" \
             r"\d{3}" \
             r" ?(price)?(евро)?(euro)?(eur)?[€\-💶💴:/]?(cтоимость)?(цена)? ?(в)?(за)?(аренд[аы])? ?(мес)?(месяц)?)"
-    num = re.findall(r_str, msg)  # лист с найдеными значениями // заменить на re.search
-    first_numbers = []
+    # List with our keywords in tuple in list
+    first_search = re.findall(r_str, msg)
 
-    for elem_list in num:  # перезаписываем в лист без пустых строк
-        for elem_str in elem_list:
-            if elem_str != '':
-                first_numbers.append(elem_str)
-    # print('first_number = ', first_numbers)           # чеккаем глазами поллученый лист в консоли
-    try:  # ловим ошибку приведения типов
-        return int(clean_price(first_numbers))  # запускаем вторую функцию и возвращаем результат
-    except ValueError:  # выдаем результат -1 который можно идентифицировать ошибкой
-        # print("exeption: type = str")
+    # Rewrite num in list without empty string
+    first_numbers = [el_s for _ in first_search for el_s in _ if el_s != '']
+
+    # Catch typecast error
+    # If catch error we return result = -1, after we can identify this result (-1) like an error
+    try:
+        return int(clean_price(first_numbers))
+    except ValueError:
         return -1
 
 
+# Second clean price search
 def clean_price(first_number):
     re_clean_price = r"(\d{1,3}[\.',\s]?\d{3})|(\d{3})"
     flag = True
     second_number = []
+    trig_w = ["евро", "euro", "eur", "€", "💶", "💴", "price", "цена", "cтоимость"]
     result = []
     for string in first_number:
-        for key_w in ["евро", "euro", "eur", "€", "💶", "💴", "price", "цена", "cтоимость"]:
+        for key_w in trig_w:
             if flag and key_w in string:
                 flag = False
                 num = re.findall(re_clean_price, string)
-                for elem_list in num:
-                    for elem_str in elem_list:
-                        if elem_str != '':
-                            second_number.append(elem_str)
-                # print("second number = ", second_number)
+                second_number = [el_s for _ in num for el_s in _ if el_s != '']
                 if not second_number:
                     flag = True
                     continue
@@ -45,14 +43,13 @@ def clean_price(first_number):
                 for elem in second_number:
                     for ch in [",", ".", " "]:
                         if ch in elem:
-                            # print('append result = ', elem.replace(ch, ""))
                             result.append(elem.replace(ch, ""))
                             flag_2 = False
-                            break  # установить continue для допуска более 1 цены
+                            break
                     if flag_2:
                         result.append(elem)
-                # print("result = ", result)
                 return result[0]
+    # If we can't find match with list 'trig_w', we start finding price in first search list
     if flag:
         for string in first_number:
             if re.findall(re_clean_price, string):
@@ -69,9 +66,8 @@ def clean_price(first_number):
                 result.append(elem)
         result.sort(reverse=True)
         if not result:
-            flag = True
+            return -1
         try:
             return result[0]
         except IndexError:
-            # print("except IndexError")
             return -1
