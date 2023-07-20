@@ -35,13 +35,14 @@ token = config['Telegram']['bot_token']
 bot = Bot(token=token)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
-good_step_list = []
 
 
 @dp.message_handler(commands=['start'], state='*')
 async def start_bot(message: types.Message):
     await ClientStatesGroup.city.set()
-    await message.reply("""Доброго времени суток! Данный бот создан для помощи в бодборе недвижимости по вашим параметрам, таким как стоимость и город!\n\n
+    print(message.message_id)
+    await message.reply("""Доброго времени суток! Данный бот создан для помощи в бодборе недвижимости по вашим 
+    параметрам, таким как стоимость и город!\n\n
         Вы можете задать диапозон цен от 100 до 999 999 у.е.\n
         А так же выбрать локацию из предложенных: Лимассол, Пафос, Ларнака, Никосия или весь Кипр
         (список локаций постоянно расширяется и вы можете оставить запрос на
@@ -60,7 +61,7 @@ async def start_bot(message: types.Message):
 async def restat_bot(message: types.Message, state: FSMContext):
     # await state.clear()
     await ClientStatesGroup.city.set()
-    await message.reply("hz",
+    await message.reply("Введите новые параметры",
                         reply_markup=choose_city_button
                         )
 
@@ -69,7 +70,7 @@ async def restat_bot(message: types.Message, state: FSMContext):
 async def stop_bot(message: types.Message):
     stop_user(message.chat.id)
     print('stop bot, id user = ', message.chat.id)
-    await message.reply("we stoped bot",
+    await message.reply("Bot stopped",
                         reply_markup=restart_button
                         )
 

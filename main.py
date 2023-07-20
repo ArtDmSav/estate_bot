@@ -89,9 +89,13 @@ while True:
             except AttributeError:  # Catch transformation to low error (debug)
                 print(AttributeError)
                 continue
+
+            # chanPeer = PeerChannel(channel_id=message.chat_id)
+            # channel_entity = client.get_entity(chanPeer)
+            # print("dgfchfgvjhghjhbhvbgjvhb", message)
             # Add date to database
             sqlite_message_db.write_lots(message.date, city, price, message.id, message.chat_id)
-            # Print date for manual check (debug)
+            # Print data for manual check (debug)
             print("city = ", city)
             print("data time = ", message.date)
             print(message.id)
