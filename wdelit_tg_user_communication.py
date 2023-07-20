@@ -1,4 +1,5 @@
 import configparser
+from enum import Enum, auto
 
 from telethon import Button
 from telethon import TelegramClient, events
@@ -34,14 +35,46 @@ async def start(event):
 А так же выбрать локацию из предложенных: Лимассол, Пафос, Ларнака, Айя напа, Никосия или весь Кипр
 (список локаций постоянно расширяется и вы можете оставить запрос на
 добавления нового города или деревни/ написав сюда @artdmsav)\n
-Бот находится на этапе альфа тестирования и возможны следующие нюансы:\n
-- Дублирование объявлений (когда одно объявление выложенно на нескольких площадкках\n
-- Возможно выбрать только один населеный пункт для поиска\n
-- Нет возможности сортировки по типу Аренда, Продажа, Покупка\n
-- Максимальная сумма ограничена 6-ю цифрами\n\n
-Мы работаем над устранением данных неудобств для Вашего комфортного пользования.\n\n
-Если Вы обнаружили ошибку или хотите предложить новую функцию, прошу написать мне @artdmsav\n\n
-P.S. От себя, желаю Вам найти квартиру или дом Вашей мечты на этом прекрасном острове!\n\n""")
+Бот находится на этапе альфа тестирования и возможны следующие нюансы:
+- Дублирование объявлений (когда одно объявление выложенно на нескольких площадкках
+- Возможно выбрать только один населеный пункт для поиска
+- Нет возможности сортировки по типу Аренда, Продажа, Покупка
+- Максимальная сумма ограничена 6-ю цифрами\n\
+Мы работаем над устранением данных неудобств для Вашего комфортного пользования.\n""")
+
+
+class State(Enum):
+    WAIT_NAME = auto()
+    WAIT_AGE = auto()
+
+
+# The state in which different users are, {user_id: state}
+conversation_state = {}
+data_state = {int: list}
+
+
+# ...code to create and setup your client...
+
+@client.on(events.NewMessage)
+async def handler(event):
+    who = event.sender_id
+    state = conversation_state.get(who)
+
+    if state is None:
+        # Starting a conversation
+        await event.respond('Hi! What is your name?')
+        conversation_state[who] = State.WAIT_NAME
+
+    elif state == State.WAIT_NAME:
+        name = event.text  # Save the name wherever you want
+        await event.respond('Nice! What is your age?')
+        conversation_state[who] = State.WAIT_AGE
+
+    elif state == State.WAIT_AGE:
+        age = event.text  # Save the age wherever you want
+        await event.respond('Thank you!')
+        # Conversation is done so we can forget the state of this user
+        del conversation_state[who]
 
 
 @client.on(events.CallbackQuery)
