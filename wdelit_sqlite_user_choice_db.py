@@ -4,7 +4,7 @@
 import sqlite3 as sql
 
 
-def write(city="Лимассол", min_price=1000, max_price=2500, user_id='+79372416727'):
+def write(city="Лимассол", min_price=1000, max_price=2500, user_id='1234567890'):
     connect = sql.connect('estate.db')
     cursor = connect.cursor()
     cursor.execute(f"INSERT INTO users (city, min_price, max_price, user_id)"
