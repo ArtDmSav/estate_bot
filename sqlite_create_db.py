@@ -16,10 +16,11 @@ def create_lots():
                         CREATE TABLE lots (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             city VARCHAR(20),
-                            price INTEGER,
+                            price INTEGER(7),
                             date DATETIME,
-                            message_id INTEGER,
-                            chat_id BIGINTEGER 
+                            message_id INTEGER(7),
+                            message_end_id INTEGER(7),
+                            chat_id BIGINTEGER(14) 
                         );
                     """)
 
@@ -39,9 +40,9 @@ def create_users():
                         CREATE TABLE users (
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             city VARCHAR(20),
-                            min_price INTEGER,
-                            max_price INTEGER,
-                            user_id VARCHAR(20),
+                            min_price INTEGER(7),
+                            max_price INTEGER(7),
+                            msg_chat_id VARCHAR(20),
                             active INTEGER(1),
                             last_datatime DATATIME
                         );
