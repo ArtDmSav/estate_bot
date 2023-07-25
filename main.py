@@ -1,14 +1,16 @@
 import configparser
 import logging
+import time
 
 from telethon.sync import TelegramClient
 from telethon.tl.functions.messages import GetHistoryRequest
 
 import city_parsing
-import create_db
 import price_parsing
+import sqlite_create_db
 import sqlite_message_db
 
+start_time = time.time()
 # Write logs
 logging.basicConfig(level=logging.DEBUG, filename='main_estate.log',
                     format='%(levelname)s (%(asctime)s): %(message)s (Line: %(lineno)d) [%(filename)s]',
@@ -35,16 +37,21 @@ client.start()
 
 # Set data
 offset_id = 0
-limit = 100
+limit = 2000
 end_id = 0
 counter = 0
+del_msg_after_day = 30
 clean_counter = 0
 target_group = 't.me/estatecyprus'
 flag_1 = True
 
 # Create database and tables
-create_db.create_lots()
-create_db.create_users()
+sqlite_create_db.create_lots()
+sqlite_create_db.create_users()
+last_msg_id = sqlite_message_db.last_msg_id()
+sqlite_message_db.del_old_msg(del_msg_after_day)
+# sqlite_message_db.del_repeating_msg()
+
 
 # Start telethon body
 while True:
@@ -66,20 +73,25 @@ while True:
     messages = history.messages
 
     for message in messages:
+        if message.id <= last_msg_id:
+            break
+
         if flag_1:  # save id first message. it's end id for next iteration
             end_id = message.id
             flag_1 = False
-            print('end id = ', end_id)
         counter += 1
         if not message.message == '':  # skip message without text (skip photo, video message)
             clean_counter += 1
+
             # Print our count message number, and 'clean' message number (only message with text)
             print('________________________________________________ \n'
                   'counter = ', counter,
                   'clean_counter = ', clean_counter
                   )
             # Call find price func in message (use low register for all text)
-            price = price_parsing.f_price(message.message.lower())
+            str_message = str(message.message).lower()
+            price = price_parsing.f_price(str_message)
+            # price = price_parsing.f_price(message.message.lower())
             if price == -1:  # If we can't find price, we move to the next message
                 continue
 
@@ -100,6 +112,10 @@ while True:
             print("data time = ", message.date)
             print(message.id)
             print(message.message)
+
+end_time = time.time()
+total_time = round(end_time - start_time, 3)
+print('\n\nProgram takes = ', total_time, 'sec')
 
 # Print table for manual check (debug)
 # sqlite_message_db.table_view_lots()
