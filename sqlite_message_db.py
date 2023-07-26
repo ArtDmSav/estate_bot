@@ -6,15 +6,16 @@ from datetime import datetime, timedelta
 
 
 def write_lots(date, city='lim', price=1000, message_id=224491,
-               chat_id=-1001261922335):  # (date, city, price, message_id, chat_id):
+               chat_id=-1001261922335, end_id='NULL'):  # (date, city, price, message_id, chat_id):
     i = date
     date = i.date()
+    if end_id == message_id:
+        end_id = -1
     connect = sql.connect("estate.db")
-
     cursor = connect.cursor()
     cursor.execute(
-        f"INSERT INTO lots (city, price, date, message_id, chat_id) VALUES ('{city}', {price}, '{date}', {message_id}, "
-        f"{chat_id})")
+        f"INSERT INTO lots (city, price, date, message_id, message_end_id, chat_id) VALUES ('{city}', {price}, '{date}'"
+        f", {message_id}, {end_id}, {chat_id})")
 
     connect.commit()
     connect.close()
@@ -112,7 +113,6 @@ def del_old_msg(day):
                           f"FROM lots ").fetchall()
 
     for row in date:
-        print(row)
         times = datetime.strptime(row[0], '%Y-%m-%d')
         if (datetime.now() - times) > timedelta(days=day):
             cursor.execute(f"DELETE FROM lots "
@@ -123,16 +123,33 @@ def del_old_msg(day):
     # end_count = time.time()
     # print(round(end_count-start_count, 3), ' sec')
 
-# def add_msg_end_id(msg_end_id):
-#     connect = sql.connect("estate.db")
-#
-#     cursor = connect.cursor()
-#     cursor.execute(f"DELETE FROM lots "
-#                    f"WHERE id NOT IN ( "
-#                    f"   SELECT MIN(id) "
-#                    f"   FROM lots"
-#                    f"   GROUP BY message_id "
-#                    f"); "
-#                    )
-#     connect.commit()
-#     connect.close()
+
+def add_msg_end_id():
+    connect = sql.connect("estate.db")
+
+    cursor = connect.cursor()
+    # cursor.execute(f"UPDATE lots "
+    #                f"SET message_end_id = NULL;")
+
+    cursor.execute(f"WITH sorted_lots AS ( "
+                   f"   SELECT *, "
+                   f"       LEAD(message_id, 1) OVER (ORDER BY message_id) as next_message_id "
+                   f"   FROM lots "
+                   f") "
+                   f"UPDATE lots "
+                   f"SET message_end_id = ( "
+                   f"    SELECT CASE "
+                   f"        WHEN sorted_lots.message_id = sorted_lots.next_message_id -1 THEN -1 "
+                   f"        ELSE sorted_lots.next_message_id "
+                   f"       END "
+                   f"    FROM sorted_lots "
+                   f"    WHERE sorted_lots.id = lots.id "
+                   f") "
+                   f"WHERE message_end_id IS NULL; "
+                   )
+
+    connect.commit()
+    connect.close()
+
+
+add_msg_end_id()
