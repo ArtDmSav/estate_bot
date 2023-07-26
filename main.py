@@ -37,13 +37,14 @@ client.start()
 
 # Set data
 offset_id = 0
-limit = 2000
+limit = 1000
 end_id = 0
 counter = 0
 del_msg_after_day = 30
 clean_counter = 0
 target_group = 't.me/estatecyprus'
 flag_1 = True
+flag_2 = True
 
 # Create database and tables
 sqlite_create_db.create_lots()
@@ -59,7 +60,7 @@ while True:
         peer=target_group,  # Don't warn ing, it's OK
         offset_id=offset_id,  # Offset message ID (only messages previous to the given ID will be retrieved).Exclusive
         offset_date=None,  # (datetime): Offset date (messages previous to this date will be retrieved). Exclusive
-        add_offset=0,  # (int): Additional message offset (all of the specified offsets + this offset = older messages)
+        add_offset=0,  # (int): Additional message offset (all the specified offsets + this offset = older messages)
         limit=limit,  # (int | None, optional): Number of messages to be retrieved. Due to limitations with the API
         # retrieving more than 3000 messages will take longer than half a minute (or even more based on
         # previous calls).
@@ -79,6 +80,8 @@ while True:
         if flag_1:  # save id first message. it's end id for next iteration
             end_id = message.id
             flag_1 = False
+            flag_2 = True
+            print('end_id_if = ', end_id)
         counter += 1
         if not message.message == '':  # skip message without text (skip photo, video message)
             clean_counter += 1
@@ -102,17 +105,20 @@ while True:
                 print(AttributeError)
                 continue
 
-            # chanPeer = PeerChannel(channel_id=message.chat_id)
-            # channel_entity = client.get_entity(chanPeer)
-            # print("dgfchfgvjhghjhbhvbgjvhb", message)
             # Add date to database
-            sqlite_message_db.write_lots(message.date, city, price, message.id, message.chat_id)
+            if flag_2:
+                flag_2 = False
+                sqlite_message_db.write_lots(message.date, city, price, message.id, message.chat_id, end_id)
+            else:
+                sqlite_message_db.write_lots(message.date, city, price, message.id, message.chat_id)
+
             # Print data for manual check (debug)
             print("city = ", city)
             print("data time = ", message.date)
             print(message.id)
             print(message.message)
 
+sqlite_message_db.add_msg_end_id()
 end_time = time.time()
 total_time = round(end_time - start_time, 3)
 print('\n\nProgram takes = ', total_time, 'sec')
