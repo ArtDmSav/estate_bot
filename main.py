@@ -1,5 +1,6 @@
 import configparser
 import logging
+import sys
 import time
 
 from telethon.sync import TelegramClient
@@ -37,7 +38,7 @@ client.start()
 
 # Set data
 offset_id = 0
-limit = 1000
+limit = 500
 end_id = 0
 counter = 0
 del_msg_after_day = 30
@@ -70,12 +71,20 @@ while True:
     ))
 
     if not history.messages:
-        break
+        sqlite_message_db.add_msg_end_id()
+        end_time = time.time()
+        total_time = round(end_time - start_time, 3)
+        print('\n\nProgram takes = ', total_time, 'sec')
+        sys.exit()
     messages = history.messages
 
     for message in messages:
         if message.id <= last_msg_id:
-            break
+            sqlite_message_db.add_msg_end_id()
+            end_time = time.time()
+            total_time = round(end_time - start_time, 3)
+            print('\n\nProgram takes = ', total_time, 'sec')
+            sys.exit()
 
         if flag_1:  # save id first message. it's end id for next iteration
             end_id = message.id
@@ -117,11 +126,6 @@ while True:
             print("data time = ", message.date)
             print(message.id)
             print(message.message)
-
-sqlite_message_db.add_msg_end_id()
-end_time = time.time()
-total_time = round(end_time - start_time, 3)
-print('\n\nProgram takes = ', total_time, 'sec')
 
 # Print table for manual check (debug)
 # sqlite_message_db.table_view_lots()
