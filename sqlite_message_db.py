@@ -78,8 +78,16 @@ def last_msg_id():
     connect = sql.connect("estate.db")
 
     cursor = connect.cursor()
-    result = cursor.execute(f"SElECT MAX(message_id) "
-                            f"FROM lots").fetchall()[0][0]
+    result = cursor.execute(f"SELECT "
+                            f"CASE "
+                            f"WHEN message_end_id = -1 THEN MAX(message_id) "
+                            f"ELSE message_end_id "
+                            f"END AS result "
+                            f"FROM lots; "
+                            ).fetchall()[0][0]
+    # Old version
+    # result = cursor.execute(f"SElECT MAX(message_id) "
+    #                         f"FROM lots").fetchall()[0][0]
     connect.close()
 
     try:
@@ -150,6 +158,3 @@ def add_msg_end_id():
 
     connect.commit()
     connect.close()
-
-
-add_msg_end_id()
