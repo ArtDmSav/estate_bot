@@ -2,7 +2,7 @@ import sqlite3 as sql
 
 
 def create_lots():
-    connect = sql.connect("estate.db")
+    connect = sql.connect("database/estate.db")
 
     with connect:
         # получаем количество таблиц с нужным нам именем
@@ -26,7 +26,7 @@ def create_lots():
 
 
 def create_users():
-    connect = sql.connect("estate.db")
+    connect = sql.connect("database/estate.db")
 
     with connect:
         # получаем количество таблиц с нужным нам именем
@@ -44,6 +44,6 @@ def create_users():
                             max_price INTEGER(7),
                             msg_chat_id VARCHAR(20),
                             active INTEGER(1),
-                            last_datatime DATATIME
+                            last_msg_id INTEGER(7)
                         );
                     """)
