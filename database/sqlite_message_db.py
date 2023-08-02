@@ -1,5 +1,11 @@
+import pathlib
 import sqlite3 as sql
 from datetime import datetime, timedelta
+from pathlib import Path
+
+dir_path = pathlib.Path.cwd()
+path = Path(dir_path, 'database', 'estate.db')
+print(str(path))
 
 
 # import time
@@ -11,7 +17,7 @@ def write_lots(date, city='lim', price=1000, message_id=224491,
     date = i.date()
     if end_id == message_id:
         end_id = -1
-    connect = sql.connect("estate.db")
+    connect = sql.connect("database/estate.db")
     cursor = connect.cursor()
     cursor.execute(
         f"INSERT INTO lots (city, price, date, message_id, message_end_id, chat_id) VALUES ('{city}', {price}, '{date}'"
@@ -22,9 +28,9 @@ def write_lots(date, city='lim', price=1000, message_id=224491,
 
 
 def write_user(city='Лимассол', min_price=1000, max_price=2000,
-               msg_chat_id=474103257, active=1,
-               last_datetime='2024-09-24 22:54:40+00:00'):  # (date, city, price, msg_message_id, chat_id):
-    connect = sql.connect("estate.db")
+               msg_chat_id=474103257, active=1, last_msg_id=1):
+    print("kgdjsnjsfnvksjdnbvksdjnfbkdsnb= ", last_msg_id)
+    connect = sql.connect("database/estate.db")
 
     cursor = connect.cursor()
     cursor.execute(f"""SELECT msg_chat_id FROM users WHERE msg_chat_id={msg_chat_id}""")
@@ -32,20 +38,20 @@ def write_user(city='Лимассол', min_price=1000, max_price=2000,
         cursor.fetchall()[0][0]
     except IndexError:
         cursor.execute(
-            f"INSERT INTO users (city, min_price, max_price, msg_chat_id, active, last_datetime) "
-            f"VALUES ('{city}', {min_price}, {max_price}, {msg_chat_id}, {active}, '{last_datetime}')")
+            f"INSERT INTO users (city, min_price, max_price, msg_chat_id, active, last_msg_id) "
+            f"VALUES ('{city}', {min_price}, {max_price}, {msg_chat_id}, {active}, '{last_msg_id}')")
         connect.commit()
     else:
         cursor.execute(
-            f" UPDATE users SET city=?, min_price=?, max_price=?, active=1 WHERE msg_chat_id=?",
-            (city, min_price, max_price, msg_chat_id))
+            f" UPDATE users SET city=?, min_price=?, max_price=?, active=?, last_msg_id=? WHERE msg_chat_id=?",
+            (city, min_price, max_price, 1, last_msg_id, msg_chat_id))
         connect.commit()
     connect.close()
 
 
 def stop_user(msg_chat_id=474103257):
     print('write_user start')
-    connect = sql.connect("estate.db")
+    connect = sql.connect("database/estate.db")
 
     cursor = connect.cursor()
     cursor.execute(f"UPDATE users SET active=0 WHERE msg_chat_id={msg_chat_id}")
@@ -55,7 +61,7 @@ def stop_user(msg_chat_id=474103257):
 
 
 def table_view_lots():
-    connect = sql.connect("estate.db")
+    connect = sql.connect("database/estate.db")
 
     data = connect.execute("SELECT * FROM lots")
     for row in data:
@@ -65,7 +71,7 @@ def table_view_lots():
 
 
 def table_view_users():
-    connect = sql.connect("estate.db")
+    connect = sql.connect("database/estate.db")
 
     date = connect.execute("SELECT * FROM users")
     for row in date:
@@ -75,7 +81,7 @@ def table_view_users():
 
 
 def last_msg_id():
-    connect = sql.connect("estate.db")
+    connect = sql.connect("database/estate.db")
 
     cursor = connect.cursor()
     result = cursor.execute(f"SELECT "
@@ -98,7 +104,7 @@ def last_msg_id():
 
 
 def del_repeating_msg():
-    connect = sql.connect("estate.db")
+    connect = sql.connect("database/estate.db")
 
     cursor = connect.cursor()
     cursor.execute(f"DELETE FROM lots "
@@ -114,7 +120,7 @@ def del_repeating_msg():
 
 def del_old_msg(day):
     # start_count = time.time()
-    connect = sql.connect("estate.db")
+    connect = sql.connect("database/estate.db")
 
     cursor = connect.cursor()
     date = cursor.execute(f"SElECT date, message_id "
@@ -133,7 +139,7 @@ def del_old_msg(day):
 
 
 def add_msg_end_id():
-    connect = sql.connect("estate.db")
+    connect = sql.connect("database/estate.db")
 
     cursor = connect.cursor()
     # cursor.execute(f"UPDATE lots "
@@ -155,6 +161,17 @@ def add_msg_end_id():
                    f") "
                    f"WHERE message_end_id IS NULL; "
                    )
+
+    connect.commit()
+    connect.close()
+
+
+def last_sent_msg_id(last_sent_msg_id, user_id):
+    print('write_last_sent_msg_id start')
+    connect = sql.connect("database/estate.db")
+
+    cursor = connect.cursor()
+    cursor.execute(f"UPDATE users SET last_msg_id={last_sent_msg_id} WHERE msg_chat_id={user_id}")
 
     connect.commit()
     connect.close()
