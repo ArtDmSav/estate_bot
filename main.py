@@ -1,4 +1,4 @@
-import wdelit_tg_user_communication
+import send_msg_to_user
 from bot.bot_telethon import parsing_chat
 from database import sqlite_message_db, sqlite_user_request
 from functions.time_count_decorator import full_time
@@ -21,7 +21,7 @@ flag = True
 for row in active_user_list:
     data = sqlite_user_request.request(row[0], row[1], row[2], row[4], int(row[3]))
     for line in data:
-        wdelit_tg_user_communication.send_msg_f_user(line[0], line[1], line[2], line[3])
+        send_msg_to_user.send_msg_f_user(line[0], line[1], line[2], line[3])
         print(line[0], line[1], line[2], line[3])
         if flag:
             if line[1] != -1:
