@@ -6,8 +6,10 @@ from telethon.tl.functions.messages import GetHistoryRequest
 
 from database import sqlite_message_db
 from functions import city_parsing, price_parsing
+from functions.time_count_decorator import time_count
 
 
+@time_count
 def parsing_chat(last_msg_id):
     logging.basicConfig(level=logging.DEBUG, filename='logs/bot_telethon.log',
                         format='%(levelname)s (%(asctime)s): %(message)s (Line: %(lineno)d) [%(filename)s]',
@@ -34,7 +36,7 @@ def parsing_chat(last_msg_id):
 
     # Set data
     offset_id = 0
-    limit = 2000
+    limit = 500
     end_id = 0
     counter = 0
     clean_counter = 0
@@ -73,7 +75,6 @@ def parsing_chat(last_msg_id):
                 end_id = message.id
                 flag_1 = False
                 flag_2 = True
-                print('end_id_if = ', end_id)
             counter += 1
             if not message.message == '':  # skip message without text (skip photo, video message)
                 clean_counter += 1
