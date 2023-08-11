@@ -3,14 +3,14 @@ import sqlite3 as sql
 from datetime import datetime, timedelta
 from pathlib import Path
 
+from functions.time_count_decorator import time_count
+
 dir_path = pathlib.Path.cwd()
 path = Path(dir_path, 'database', 'estate.db')
 print(str(path))
 
 
-# import time
-
-
+@time_count
 def write_lots(date, city='lim', price=1000, message_id=224491,
                chat_id=-1001261922335, end_id='NULL'):  # (date, city, price, message_id, chat_id):
     i = date
@@ -27,6 +27,7 @@ def write_lots(date, city='lim', price=1000, message_id=224491,
     connect.close()
 
 
+@time_count
 def write_user(city='Лимассол', min_price=1000, max_price=2000,
                msg_chat_id=474103257, active=1, last_msg_id=1):
     print("kgdjsnjsfnvksjdnbvksdjnfbkdsnb= ", last_msg_id)
@@ -49,6 +50,7 @@ def write_user(city='Лимассол', min_price=1000, max_price=2000,
     connect.close()
 
 
+@time_count
 def stop_user(msg_chat_id=474103257):
     print('write_user start')
     connect = sql.connect("database/estate.db")
@@ -60,6 +62,7 @@ def stop_user(msg_chat_id=474103257):
     connect.close()
 
 
+@time_count
 def table_view_lots():
     connect = sql.connect("database/estate.db")
 
@@ -70,6 +73,7 @@ def table_view_lots():
     connect.close()
 
 
+@time_count
 def table_view_users():
     connect = sql.connect("database/estate.db")
 
@@ -80,6 +84,7 @@ def table_view_users():
     connect.close()
 
 
+@time_count
 def last_msg_id():
     connect = sql.connect("database/estate.db")
 
@@ -103,6 +108,7 @@ def last_msg_id():
         return None
 
 
+@time_count
 def del_repeating_msg():
     connect = sql.connect("database/estate.db")
 
@@ -118,6 +124,7 @@ def del_repeating_msg():
     connect.close()
 
 
+@time_count
 def del_old_msg(day):
     # start_count = time.time()
     connect = sql.connect("database/estate.db")
@@ -138,6 +145,7 @@ def del_old_msg(day):
     # print(round(end_count-start_count, 3), ' sec')
 
 
+@time_count
 def add_msg_end_id():
     connect = sql.connect("database/estate.db")
 
@@ -166,8 +174,9 @@ def add_msg_end_id():
     connect.close()
 
 
+@time_count
 def last_sent_msg_id(last_sent_msg_id, user_id):
-    print('write_last_sent_msg_id start')
+    print(f'write_last_sent_msg_id = {last_sent_msg_id}, user_id = {user_id}')
     connect = sql.connect("database/estate.db")
 
     cursor = connect.cursor()

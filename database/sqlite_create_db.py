@@ -1,6 +1,9 @@
 import sqlite3 as sql
 
+from functions.time_count_decorator import time_count
 
+
+@time_count
 def create_lots():
     connect = sql.connect("database/estate.db")
 
@@ -25,6 +28,7 @@ def create_lots():
                     """)
 
 
+@time_count
 def create_users():
     connect = sql.connect("database/estate.db")
 

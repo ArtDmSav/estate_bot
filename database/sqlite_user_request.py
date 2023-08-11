@@ -1,6 +1,9 @@
 import sqlite3 as sql
 
+from functions.time_count_decorator import time_count
 
+
+@time_count
 def active_user():
     active_user_base = []
     connect = sql.connect('database/estate.db')
@@ -14,6 +17,7 @@ def active_user():
     return active_user_base
 
 
+@time_count
 def request(city="Лимассол", min_price=1000, max_price=2000, last_msg_id=1, user_id=474103257):
     data_user = []
     connect = sql.connect('database/estate.db')
