@@ -1,7 +1,10 @@
 import re
 
+from functions.time_count_decorator import time_count
+
 
 # First searching price keywords
+@time_count
 def f_price(msg):
     r_str = r"((price)?(евро)?(cтоимость)?(цена)?(в)?(за)?(аренд[аы])?(euro)?(eur)? ?(мес)?(месяц)?[€\-💶💴:/]? ?" \
             r"\d{1,3}[\.',\s]?\d{3}" \
