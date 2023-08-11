@@ -1,6 +1,9 @@
 import re
 
+from functions.time_count_decorator import time_count
 
+
+@time_count
 def parse(msg):
     # Write city name on 3 language (En, Gr, Ru)
     re_limassol = r"(л[ие]м[ао]сс?ол[ае]?)|(l[ie]m[ae]ss?o[ls])|(n[ei]ap[oa]lis)|(lim)|(лим)"
