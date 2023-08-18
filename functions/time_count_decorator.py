@@ -1,3 +1,5 @@
+import time
+
 f_time = []
 
 
@@ -10,13 +12,11 @@ def full_time():
 
 
 def time_count(func):
-    import time
 
     def wrapper(*args, **kwargs):
         start = time.time()
         return_val = func(*args, **kwargs)
         end = time.time()
-        print(f'[*] Время выполнения {func.__name__}: {round((end - start), 3)} секунд.')
         f_time.append(end - start)
         return return_val
 
