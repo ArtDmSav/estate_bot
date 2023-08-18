@@ -1,10 +1,11 @@
 import configparser
 import logging
+import pathlib
 
 from telethon.sync import TelegramClient
 from telethon.tl.functions.messages import GetHistoryRequest
 
-from database import sqlite_message_db
+from database import sqlite_commit_db
 from functions import city_parsing, price_parsing
 from functions.time_count_decorator import time_count
 
@@ -21,9 +22,13 @@ def parsing_chat(last_msg_id):
     logging.info('info')
     logging.error('error')
 
+    # Write path to work directory
+    dir_path = pathlib.Path.cwd()
+    path = pathlib.Path(dir_path, 'config', 'config.ini')
+
     # Read config file
     config = configparser.ConfigParser()
-    config.read("config/config.ini")
+    config.read(path)
 
     # Assign data from file
     api_id = int(config['Telegram']['api_id'])
@@ -39,7 +44,6 @@ def parsing_chat(last_msg_id):
     limit = 500
     end_id = 0
     counter = 0
-    clean_counter = 0
     target_group = 't.me/estatecyprus'
     flag_1 = True
     flag_2 = True
@@ -60,14 +64,14 @@ def parsing_chat(last_msg_id):
         ))
 
         if not history.messages:
-            sqlite_message_db.add_msg_end_id()
+            sqlite_commit_db.add_msg_end_id()
             client.disconnect()
             return
         messages = history.messages
 
         for message in messages:
             if message.id <= last_msg_id:
-                sqlite_message_db.add_msg_end_id()
+                sqlite_commit_db.add_msg_end_id()
                 client.disconnect()
                 return
 
@@ -75,38 +79,34 @@ def parsing_chat(last_msg_id):
                 end_id = message.id
                 flag_1 = False
                 flag_2 = True
-            counter += 1
-            if not message.message == '':  # skip message without text (skip photo, video message)
-                clean_counter += 1
 
-                # Print our count message number, and 'clean' message number (only message with text)
-                print('________________________________________________ \n'
-                      'counter = ', counter,
-                      'clean_counter = ', clean_counter
-                      )
+            if message.message != '':  # skip message without text (skip photo, video message)
+
                 # Call find price func in message (use low register for all text)
                 str_message = str(message.message).lower()
                 price = price_parsing.f_price(str_message)
-                # price = price_parsing.f_price(message.message.lower())
                 if price == -1:  # If we can't find price, we move to the next message
                     continue
 
-                print("price = ", price, "€")
                 try:
                     city = city_parsing.parse(message.message.lower())
                 except AttributeError:  # Catch transformation to low error (debug)
                     print(AttributeError)
                     continue
 
-                # Add date to database
+                # Add lot to database
                 if flag_2:
                     flag_2 = False
-                    sqlite_message_db.write_lots(message.date, city, price, message.id, message.chat_id, end_id)
+                    sqlite_commit_db.write_lots(message.date, city, price, message.id, message.chat_id, end_id)
+                    counter += 1
+                    print(f"write to db {counter} msg")
                 else:
-                    sqlite_message_db.write_lots(message.date, city, price, message.id, message.chat_id)
+                    sqlite_commit_db.write_lots(message.date, city, price, message.id, message.chat_id)
+                    counter += 1
+                    print(f"write to db {counter} msg")
 
                 # Print data for manual check (debug)
-                print("city = ", city)
-                print("data time = ", message.date)
-                print(message.id)
-                print(message.message)
+                # print("price = ", price, "€")
+                # print("city = ", city)
+                # print(message.id)
+                # print(message.message)
