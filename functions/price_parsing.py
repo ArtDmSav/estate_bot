@@ -53,6 +53,7 @@ def clean_price(first_number):
                     if flag_2:
                         result.append(elem)
                 return result[0]
+
     # If we can't find match with list 'trig_w', we start finding price in first search list
     if flag:
         for string in first_number:
