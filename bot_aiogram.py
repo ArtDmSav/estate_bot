@@ -9,7 +9,8 @@ from aiogram.dispatcher import Dispatcher, FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from bot.keyboards.tg_keyboards_aiogram import city_name_bt, max_price_bt, min_price_bt, restart_bt
-from database.sqlite_message_db import write_user, stop_user, last_msg_id
+from database.sqlite_commit_db import write_user, stop_user
+from database.sqlite_view_db import last_msg_id
 
 logging.basicConfig(level=logging.DEBUG, filename='logs/bot_aiogram.log',
                     format='%(levelname)s (%(asctime)s): %(message)s (Line: %(lineno)d) [%(filename)s]',
@@ -45,25 +46,27 @@ dp = Dispatcher(bot, storage=storage)
 async def start_bot(message: types.Message):
     await ClientStatesGroup.city.set()
     print(message.message_id)
-    await message.reply("""Доброго времени суток! Данный бот создан для помощи в бодборе недвижимости по вашим 
-    параметрам, таким как стоимость и город!\n\n
+    await message.reply("""Доброго времени суток! Данный бот создан для помощи в подборе недвижимости по вашим 
+        параметрам, таким как стоимость и город!
         Вы можете задать диапозон цен от 100 до 999 999 у.е.\n
         А так же выбрать локацию из предложенных: Лимассол, Пафос, Ларнака, Никосия или весь Кипр
         (список локаций постоянно расширяется и вы можете оставить запрос на
         добавления нового города или деревни/ написав сюда @artdmsav)
-        Бот находится на этапе альфа тестирования и возможны следующие нюансы:
-        - Дублирование объявлений 
+        Бот находится на этапе альфа тестирования и возможны следующие нюансы: 
         - Возможно выбрать только один населеный пункт для поиска
         - Нет возможности сортировки по типу Аренда, Продажа, Покупка
-        - Максимальная сумма ограничена 6-ю цифрами\n
-        Мы работаем над устранением данных неудобств для Вашего комфортного пользования.\n""",
+        - Сумма ограничена от 3-х до 6-ти цифрами\n
+        Мы работаем над устранением данных неудобств для Вашего комфортного пользования.\n\n\n
+                         >>>>ВАЖНО<<<<\n
+Все сообщения будут приходить от @estatecyprus_msg 
+Если у Вас закрытый аккаунт, напишите @estatecyprus_msg  любое сообщение для дальнейшего функционирования
+бота \n\n\n\n""",
                         reply_markup=city_name_bt()
                         )
 
 
 @dp.message_handler(text='Ввести новые параметры', state='*')
-async def restat_bot(message: types.Message, state: FSMContext):
-    # await state.clear()
+async def restat_bot(message: types.Message):
     await ClientStatesGroup.city.set()
     await message.reply("Введите новые параметры",
                         reply_markup=city_name_bt()
