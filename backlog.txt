@@ -1,35 +1,24 @@
 main.py
-- add async in telethon func
-- почистить коментарии
-- почистить не нужные переменные
-- добавить автотесты
-- target_group - переделать в список групп (t.me/...), список груп брать из файла .txt
+- add async in bot_telethon, send_msg_to_user
+- add autotest
 
-sqlite_message_db.py
-- del_old_msg() написать удаление через group by
+sqlite_commit_db.py
+- del_old_msg() change request to "group by"
 
-tg_keyboards.py
-- добавить def ко всем кнопкам
+autotest
+- lots without price
 
-автотетсты
-- объявление без цены
-
-проблемы:
-- зацикливается на пересланных в считываюмую группу сообщениях
-- хранение логинов/паролей в .env виртуальном окружении
+add/change:
+- add docker file
+- add requirements.txt
+- keep login/password/token in .env
 - FSM: memory storage change for redis storage or mongo storage
-
-
-вопросы
-- уменьшить время [*] Время выполнения каждого send_msg_f_user: от  0.6 до 10 секунд. Путем открытия одного конекта бд
-- добавить стоп слова [работа/у сниму ищу ищем заработок  подработка таблетки стаф набор интим 18+ обучение обучиться
-    доход]
-- в парсер городов добавить районы
-- при записи енд мсж ид в лотс проверять что все сообщения  от одного автора
-- сохранение сообщений в бд
-- пересылка сообщений и авторов
-- структурировать проект
-- скрипт для запуска по времени
-- webhook ?
-- добавить возможность пользователю указывать за какой интервал времени присылать объявления
-
+- forward msgs in TG bot like forward msgs, not like links
+- check that in one forward msg all files have one sender
+- add stop words to control spam and stop messages from people who are looking for an apartment.
+    [работа/у сниму ищу ищем заработок  подработка таблетки стаф набор интим 18+ обучение обучиться доход]
+- add more city's, villages
+- add a districts of the city
+- webhook?
+- crontab script
+- add func to send lot with user param for last {x} days
