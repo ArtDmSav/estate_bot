@@ -9,7 +9,7 @@ def restart_bt():
 
 def city_name_bt():
     list_city_name = [['Лимассол', 'Никосия', 'Пафос'],
-                      ['Ларнака', 'Весь Кипр']]
+                      ['Ларнака', 'Остальной Кипр']]
     buttons_list_city = []
 
     for item in list_city_name:
