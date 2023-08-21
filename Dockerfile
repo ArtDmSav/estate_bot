@@ -1,7 +1,6 @@
 FROM python:3.10
-WORKDIR /app
-COPY requirements.txt requirements.txt
-RUN pip install --upgrade setuptools
-RUN pip install -r requirements.txt
-RUN chmod 755 .
+WORKDIR /estate_bot/
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
+CMD ["python", "./bot_aiogram.py", "./main.py"]
