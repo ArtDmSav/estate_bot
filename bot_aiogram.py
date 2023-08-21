@@ -1,6 +1,5 @@
 import configparser
 import logging
-import pathlib
 from pathlib import Path
 
 from aiogram import Bot, types, executor
@@ -29,7 +28,7 @@ class ClientStatesGroup(StatesGroup):
     max_price = State()
 
 
-dir_path = pathlib.Path.cwd()
+dir_path = Path.cwd()
 path = Path(dir_path, 'config', 'config.ini')
 
 config = configparser.ConfigParser()
@@ -55,12 +54,8 @@ async def start_bot(message: types.Message):
         Бот находится на этапе альфа тестирования и возможны следующие нюансы: 
         - Возможно выбрать только один населеный пункт для поиска
         - Нет возможности сортировки по типу Аренда, Продажа, Покупка
-        - Сумма ограничена от 3-х до 6-ти цифрами\n
-        Мы работаем над устранением данных неудобств для Вашего комфортного пользования.\n\n\n
-                         >>>>ВАЖНО<<<<\n
-Все сообщения будут приходить от @estatecyprus_msg 
-Если у Вас закрытый аккаунт, напишите @estatecyprus_msg  любое сообщение для дальнейшего функционирования
-бота \n\n\n\n""",
+        - Сумма ограничена от 3-х до 6-ти цифр\n
+        Мы работаем над устранением данных неудобств для Вашего комфортного пользования.\n""",
                         reply_markup=city_name_bt()
                         )
 
@@ -77,7 +72,7 @@ async def restat_bot(message: types.Message):
 async def stop_bot(message: types.Message):
     stop_user(message.chat.id)
     print('stop bot, id user = ', message.chat.id)
-    await message.reply("Bot stopped",
+    await message.reply("Бот остановлен!\n Для нового поиска нажмите кнопку 'Ввести новые параметры'",
                         reply_markup=restart_bt()
                         )
 
