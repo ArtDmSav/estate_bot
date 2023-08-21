@@ -7,6 +7,7 @@ sqlite_commit_db.py
 
 autotest
 - lots without price
+- create db and first start
 
 add/change:
 - add docker file
@@ -15,10 +16,11 @@ add/change:
 - FSM: memory storage change for redis storage or mongo storage
 - forward msgs in TG bot like forward msgs, not like links
 - check that in one forward msg all files have one sender
+- separate rent and sell lots with markers in db
 - add stop words to control spam and stop messages from people who are looking for an apartment.
     [работа/у сниму ищу ищем заработок  подработка таблетки стаф набор интим 18+ обучение обучиться доход]
 - add more city's, villages
 - add a districts of the city
 - webhook?
-- crontab script
+- crontab/taskiq/celery
 - add func to send lot with user param for last {x} days
