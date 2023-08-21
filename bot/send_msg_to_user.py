@@ -76,7 +76,7 @@ def send_msgs_f_users(active_user_list, last_msg_id):
                 sqlite_commit_db.last_sent_msg_id(last_sent_msg_id, row[3])
 
 
-# @time_count
+@time_count
 def send_link_to_bot_t():
     # Считываем учетные данные
     config = configparser.ConfigParser()

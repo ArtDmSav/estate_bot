@@ -25,14 +25,14 @@ def active_user():
 
 
 @time_count
-def request(city, min_price, max_price, last_msg_id, user_id):
+def request(city, min_price, max_price, last_msg, user_id):
     data_user = []
     connect = sql.connect(path)
     cursor = connect.cursor()
 
-    data = cursor.execute(f"SELECT message_id, message_end_id, {user_id}, chat_id "
+    data = cursor.execute(f"SELECT message_id, message_end_id, {user_id}, chat_id, msg "
                           f"FROM lots "
-                          f"WHERE message_id > {last_msg_id} "
+                          f"WHERE message_id > {last_msg} "
                           f"    AND city = '{city}' "
                           f"    AND price BETWEEN {min_price} AND {max_price} "
                           f"ORDER BY message_id DESC; "

@@ -24,7 +24,8 @@ def create_lots():
                             date DATETIME,
                             message_id INTEGER(7) NOT NULL UNIQUE,
                             message_end_id INTEGER(7),
-                            chat_id BIGINTEGER(14),
+                            chat_id TEXT,
+                            msg TEXT(33),
                             PRIMARY KEY(message_id)
                         );
                     """)

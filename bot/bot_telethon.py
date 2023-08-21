@@ -97,11 +97,12 @@ def parsing_chat(last_msg_id):
                 # Add lot to database
                 if flag_2:
                     flag_2 = False
-                    sqlite_commit_db.write_lots(message.date, city, price, message.id, message.chat_id, end_id)
+                    sqlite_commit_db.write_lots(message.date, city, price, message.id, target_group,
+                                                message.message, end_id)
                     counter += 1
                     print(f"write to db {counter} msg")
                 else:
-                    sqlite_commit_db.write_lots(message.date, city, price, message.id, message.chat_id)
+                    sqlite_commit_db.write_lots(message.date, city, price, message.id, target_group, message.message)
                     counter += 1
                     print(f"write to db {counter} msg")
 

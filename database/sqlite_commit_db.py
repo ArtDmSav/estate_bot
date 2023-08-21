@@ -9,7 +9,7 @@ path = pathlib.Path(dir_path, 'database', 'estate.db')
 
 
 @time_count
-def write_lots(date, city, price, message_id, chat_id, end_id='NULL'):
+def write_lots(date, city, price, message_id, chat_id, msg, end_id='NULL'):
     i = date
     date = i.date()
     if end_id == message_id:
@@ -18,8 +18,8 @@ def write_lots(date, city, price, message_id, chat_id, end_id='NULL'):
     cursor = connect.cursor()
 
     cursor.execute(
-        f"INSERT INTO lots (city, price, date, message_id, message_end_id, chat_id) VALUES ('{city}', {price}, '{date}'"
-        f", {message_id}, {end_id}, {chat_id})")
+        f"INSERT INTO lots (city, price, date, message_id, message_end_id, chat_id, msg) VALUES ('{city}', {price}, "
+        f"'{date}', {message_id}, {end_id}, '{chat_id}', '{msg}')")
 
     connect.commit()
     connect.close()
@@ -60,7 +60,6 @@ def stop_user(msg_chat_id):
 
     connect.commit()
     connect.close()
-
 
 
 @time_count
