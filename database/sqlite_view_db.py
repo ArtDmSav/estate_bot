@@ -1,10 +1,24 @@
-import pathlib
 import sqlite3 as sql
+from pathlib import Path
 
 from functions.time_count_decorator import time_count
 
-dir_path = pathlib.Path.cwd()
-path = pathlib.Path(dir_path, 'database', 'estate.db')
+dir_path = Path(__file__).parent.resolve()
+path = dir_path / 'estate.db'
+
+
+def view_user():
+    connect = sql.connect(path)
+    cursor = connect.cursor()
+
+    data = cursor.execute("SELECT city, min_price, max_price, msg_chat_id "
+                          "FROM users "
+                          "WHERE active = 1 ")
+
+    for row in data:
+        print(row)
+
+    connect.close()
 
 
 @time_count
@@ -19,6 +33,7 @@ def active_user():
 
     for row in data:
         active_user_base.append(row)
+        print(row)
 
     connect.close()
     return active_user_base
@@ -49,13 +64,17 @@ def last_msg_id():
     connect = sql.connect(path)
     cursor = connect.cursor()
 
-    result = cursor.execute(f"SELECT "
-                            f"CASE "
-                            f"WHEN message_end_id = -1 THEN MAX(message_id) "
-                            f"ELSE message_end_id "
-                            f"END AS result "
+    result = cursor.execute(f"SELECT MAX(message_id) "
                             f"FROM lots; "
                             ).fetchall()[0][0]
+
+    # result = cursor.execute(f"SELECT "
+    #                         f"CASE "
+    #                         f"WHEN message_end_id = -1 THEN MAX(message_id) "
+    #                         f"ELSE message_end_id "
+    #                         f"END AS result "
+    #                         f"FROM lots; "
+    #                         ).fetchall()[0][0]
 
     connect.close()
     try:
