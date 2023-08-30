@@ -1,11 +1,11 @@
-import pathlib
 import sqlite3 as sql
 from datetime import datetime, timedelta
+from pathlib import Path
 
 from functions.time_count_decorator import time_count
 
-dir_path = pathlib.Path.cwd()
-path = pathlib.Path(dir_path, 'database', 'estate.db')
+dir_path = Path(__file__).parent.resolve()
+path = dir_path / 'estate.db'
 
 
 @time_count
@@ -14,12 +14,26 @@ def write_lots(date, city, price, message_id, chat_id, msg, end_id='NULL'):
     date = i.date()
     if end_id == message_id:
         end_id = -1
+    print(f"GROUP_ID: {chat_id} MSG_ID: {message_id} CITY: {city} PRICE: {price}")
     connect = sql.connect(path)
     cursor = connect.cursor()
 
-    cursor.execute(
-        f"INSERT INTO lots (city, price, date, message_id, message_end_id, chat_id, msg) VALUES ('{city}', {price}, "
-        f"'{date}', {message_id}, {end_id}, '{chat_id}', '{msg}')")
+    cursor.execute(f"""SELECT message_id FROM lots WHERE message_id={message_id}""")
+
+    # check to double UNIQUE constraint: lots.message_id
+    # p.s. added after real case in production release
+    try:
+        cursor.fetchall()[0][0]
+    except IndexError:
+        try:
+            cursor.execute(
+                f"INSERT INTO lots (city, price, date, message_id, message_end_id, chat_id, msg) "
+                f"VALUES ('{city}', {price}, '{date}', {message_id}, {end_id}, '{chat_id}', '{msg}') ")
+        except ValueError:
+            print("sqlite3.OperationalError: syntax error")
+    else:
+        print("double lots with id: ", message_id)
+        print("sqlite3.IntegrityError: UNIQUE constraint failed: lots.message_id")
 
     connect.commit()
     connect.close()
