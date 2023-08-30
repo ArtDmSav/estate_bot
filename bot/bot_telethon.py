@@ -1,5 +1,4 @@
 import configparser
-import logging
 import pathlib
 
 from telethon.sync import TelegramClient
@@ -12,19 +11,13 @@ from functions.time_count_decorator import time_count
 
 @time_count
 def parsing_chat(last_msg_id):
-    logging.basicConfig(level=logging.DEBUG, filename='logs/bot_telethon.log',
-                        format='%(levelname)s (%(asctime)s): %(message)s (Line: %(lineno)d) [%(filename)s]',
-                        datefmt='%d/%m/%Y %I:%M:%S', encoding='UTF-8', filemode='w'
-                        )
-    logging.warning('warning')
-    logging.critical('critical')
-    logging.debug('debug')
-    logging.info('info')
-    logging.error('error')
-
     # Write path to work directory
     dir_path = pathlib.Path.cwd()
     path = pathlib.Path(dir_path, 'config', 'config.ini')
+
+    # # Write path to work directory
+    # dir_path = Path.home()
+    # path = dir_path/'estate_bot/config/config.ini'
 
     # Read config file
     config = configparser.ConfigParser()
@@ -33,10 +26,10 @@ def parsing_chat(last_msg_id):
     # Assign data from file
     api_id = int(config['Telegram']['api_id'])
     api_hash = config['Telegram']['api_hash']
-    phone = config['Telegram']['username']
+    # phone = config['Telegram']['username']
 
     # Start telegram client by telethon
-    client = TelegramClient(phone, api_id, api_hash)
+    client = TelegramClient("6660980557", api_id, api_hash, system_version="4.16.30-vxCUSTOM")
     client.start()
 
     # Set data
@@ -100,11 +93,9 @@ def parsing_chat(last_msg_id):
                     sqlite_commit_db.write_lots(message.date, city, price, message.id, target_group,
                                                 message.message, end_id)
                     counter += 1
-                    print(f"write to db {counter} msg")
                 else:
                     sqlite_commit_db.write_lots(message.date, city, price, message.id, target_group, message.message)
                     counter += 1
-                    print(f"write to db {counter} msg")
 
                 # Print data for manual check (debug)
                 # print("price = ", price, "€")
