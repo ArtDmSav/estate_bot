@@ -10,7 +10,9 @@ autotest
 - create db and first start
 
 add/change:
-- add docker file
+- deleted all link with message_end_id
+- translate all msg to en/ru
+- add history users data changes and history sent mst to user
 - add requirements.txt
 - keep login/password/token in .env
 - FSM: memory storage change for redis storage or mongo storage
@@ -24,3 +26,28 @@ add/change:
 - webhook?
 - crontab/taskiq/celery
 - add func to send lot with user param for last {x} days
+
+advertisement for realtors (only 50 euro per week):
+    - your visit card will send 10 times per day every people who
+        use bot free
+    -
+
+
+
+type subscription:
+    free:
+        - update every hour
+        - advertisement with realtor serves
+
+    premium (10 euro/month)
+        - update base every 5 min
+        - without advertisement
+        - translate msg ru/en
+        - choose more than 1 location
+        - you can choose time with you want get msg from bot
+        - you can see base for your chosen parameters under last 7 days
+            (good option if you change your parameters)
+
+
+
+
