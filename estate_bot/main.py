@@ -1,7 +1,7 @@
-from bot.bot_telethon import parsing_chat
-from bot.send_msg_to_user import send_link_to_bot
-from database import sqlite_commit_db, sqlite_view_db
-from functions.time_count_decorator import full_time
+from estate_bot.bot.bot_telethon import parsing_chat
+from estate_bot.bot.send_msg_to_user import send_link_to_bot
+from estate_bot.database import sqlite_commit_db, sqlite_view_db
+from estate_bot.functions.time_count_decorator import full_time
 
 
 # @repeat(every(9).minutes)

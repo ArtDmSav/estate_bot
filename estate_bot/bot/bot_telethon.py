@@ -1,35 +1,16 @@
-import configparser
-import pathlib
-
 from telethon.sync import TelegramClient
 from telethon.tl.functions.messages import GetHistoryRequest
 
-from database import sqlite_commit_db
-from functions import city_parsing, price_parsing
-from functions.time_count_decorator import time_count
+from estate_bot.config.data import API_ID, API_HASH, USERNAME
+from estate_bot.database import sqlite_commit_db
+from estate_bot.functions import city_parsing, price_parsing
+from estate_bot.functions.time_count_decorator import time_count
 
 
 @time_count
 def parsing_chat(last_msg_id):
-    # Write path to work directory
-    dir_path = pathlib.Path.cwd()
-    path = pathlib.Path(dir_path, 'config', 'config.ini')
-
-    # # Write path to work directory
-    # dir_path = Path.home()
-    # path = dir_path/'estate_bot/config/config.ini'
-
-    # Read config file
-    config = configparser.ConfigParser()
-    config.read(path)
-
-    # Assign data from file
-    api_id = int(config['Telegram']['api_id'])
-    api_hash = config['Telegram']['api_hash']
-    # phone = config['Telegram']['username']
-
     # Start telegram client by telethon
-    client = TelegramClient("6660980557", api_id, api_hash, system_version="4.16.30-vxCUSTOM")
+    client = TelegramClient(USERNAME, API_ID, API_HASH, system_version="4.16.30-vxCUSTOM")
     client.start()
 
     # Set data

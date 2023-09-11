@@ -1,7 +1,7 @@
 import sqlite3 as sql
 from pathlib import Path
 
-from functions.time_count_decorator import time_count
+from estate_bot.functions.time_count_decorator import time_count
 
 dir_path = Path(__file__).parent.resolve()
 path = dir_path / 'estate.db'

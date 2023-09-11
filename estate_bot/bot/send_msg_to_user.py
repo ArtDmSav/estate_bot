@@ -1,24 +1,14 @@
-import configparser
-
 from telethon.sync import TelegramClient
 
-from database import sqlite_view_db, sqlite_commit_db
-from functions.time_count_decorator import time_count
+from estate_bot.config.data import API_ID, API_HASH, BOT_TOKEN
+from estate_bot.database import sqlite_view_db, sqlite_commit_db
+from estate_bot.functions.time_count_decorator import time_count
 
 
 @time_count
 def send_link_to_bot(active_user_list, last_msg_id):
-    # Считываем учетные данные
-    config = configparser.ConfigParser()
-    config.read("config/config.ini")
-
-    # Присваиваем значения внутренним переменным
-    api_id = config['Telegram']['api_id']
-    api_hash = config['Telegram']['api_hash']
-    bot_token = config['Telegram']['bot_token']
-
     # We have to manually call "start" if we want an explicit bot token
-    bot = TelegramClient('bot', int(api_id), api_hash, system_version="4.16.30-vxCUSTOM").start(bot_token=bot_token)
+    bot = TelegramClient('bot', int(API_ID), API_HASH, system_version="4.16.30-vxCUSTOM").start(bot_token=BOT_TOKEN)
 
     with bot:
         # bot.send_message(474103257, 'Thanks for the Telethon library!')

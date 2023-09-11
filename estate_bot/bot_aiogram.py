@@ -1,15 +1,14 @@
-import configparser
 import logging
-from pathlib import Path
 
 from aiogram import Bot, types, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import Dispatcher, FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
-from bot.keyboards.tg_keyboards_aiogram import city_name_bt, max_price_bt, min_price_bt, restart_bt
-from database.sqlite_commit_db import write_user, stop_user
-from database.sqlite_view_db import last_msg_id
+from estate_bot.bot.keyboards.tg_keyboards_aiogram import city_name_bt, max_price_bt, min_price_bt, restart_bt
+from estate_bot.config.data import BOT_TOKEN
+from estate_bot.database.sqlite_commit_db import write_user, stop_user
+from estate_bot.database.sqlite_view_db import last_msg_id
 
 logging.basicConfig(level=logging.DEBUG, filename='logs/bot_aiogram.log',
                     format='%(levelname)s (%(asctime)s): %(message)s (Line: %(lineno)d) [%(filename)s]',
@@ -28,15 +27,7 @@ class ClientStatesGroup(StatesGroup):
     max_price = State()
 
 
-dir_path = Path.cwd()
-path = Path(dir_path, 'config', 'config.ini')
-
-config = configparser.ConfigParser()
-config.read(path)
-
-token = config['Telegram']['bot_token']
-
-bot = Bot(token=token)
+bot = Bot(token=BOT_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 

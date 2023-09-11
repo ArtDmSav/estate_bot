@@ -1,6 +1,6 @@
 import re
 
-from functions.time_count_decorator import time_count
+from estate_bot.functions.time_count_decorator import time_count
 
 
 @time_count

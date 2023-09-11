@@ -1,7 +1,7 @@
 import pathlib
 import sqlite3 as sql
 
-from functions.time_count_decorator import time_count
+from estate_bot.functions.time_count_decorator import time_count
 
 # Write path to work directory
 dir_path = pathlib.Path.cwd()
