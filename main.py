@@ -11,7 +11,7 @@ def do_it():
     # sqlite_create_db.create_users()
 
     # Delete old messages
-    del_msg_after_day = 5
+    del_msg_after_day = 7
     sqlite_commit_db.del_old_msg(del_msg_after_day)
 
     last_msg_id = sqlite_view_db.last_msg_id()
