@@ -20,6 +20,7 @@ def time_count(func):
         return_val = func(*args, **kwargs)
         end = time.time()
         f_time.append(end - start)
+        print(f"[*] Время выполнения функции {func.__name__}: {round(end-start,3)} секунд.")
         return return_val
 
     return wrapper
