@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "estate-bot"
+version = "1.0"
+description = "first pet project"
+authors = ["ArtDmSav <artdmsav@gmail.com>"]
+license = "-"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pytest = "^7.4.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
