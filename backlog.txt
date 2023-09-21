@@ -10,6 +10,7 @@ autotest
 - create db and first start
 
 add/change:
+- price only with '+'.GROUP_ID: t.me/estatecyprus MSG_ID: 372250 CITY: Лимассол PRICE: -2000
 - deleted all link with message_end_id
 - translate all msg to en/ru
 - add history users data changes and history sent mst to user
