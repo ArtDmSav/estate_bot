@@ -68,14 +68,6 @@ def last_msg_id():
                             f"FROM lots; "
                             ).fetchall()[0][0]
 
-    # result = cursor.execute(f"SELECT "
-    #                         f"CASE "
-    #                         f"WHEN message_end_id = -1 THEN MAX(message_id) "
-    #                         f"ELSE message_end_id "
-    #                         f"END AS result "
-    #                         f"FROM lots; "
-    #                         ).fetchall()[0][0]
-
     connect.close()
     try:
         if result is None:
