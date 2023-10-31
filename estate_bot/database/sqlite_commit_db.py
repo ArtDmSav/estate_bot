@@ -2,6 +2,7 @@ import sqlite3 as sql
 from datetime import datetime, timedelta
 from pathlib import Path
 
+from estate_bot.config.data import DEL_MSG_AFTER_DAY
 from estate_bot.functions.time_count_decorator import time_count
 
 dir_path = Path(__file__).parent.resolve()
@@ -22,9 +23,7 @@ def write_lots(date, city, price, message_id, chat_id, msg, end_id='NULL'):
 
     # check to double UNIQUE constraint: lots.message_id
     # p.s. added after real case in production release
-    try:
-        cursor.fetchall()[0][0]
-    except IndexError:
+    if any(cursor.fetchall()):
         try:
             cursor.execute(
                 f"INSERT INTO lots (city, price, date, message_id, message_end_id, chat_id, msg) "
@@ -46,10 +45,7 @@ def write_user(city, min_price, max_price, msg_chat_id, active, last_msg_id=1):
     cursor = connect.cursor()
 
     cursor.execute(f"""SELECT msg_chat_id FROM users WHERE msg_chat_id={msg_chat_id}""")
-    try:
-        cursor.fetchall()[0][0]
-    except IndexError:
-
+    if any(cursor.fetchall()):
         cursor.execute(
             f"INSERT INTO users (city, min_price, max_price, msg_chat_id, active, last_msg_id) "
             f"VALUES ('{city}', {min_price}, {max_price}, {msg_chat_id}, {active}, '{last_msg_id}')")
@@ -94,18 +90,21 @@ def del_repeating_msg():
 
 
 @time_count
-def del_old_msg(days):
+def del_old_msg():
+    time_del = (datetime.now()-timedelta(days=DEL_MSG_AFTER_DAY))
+
     connect = sql.connect(path)
     cursor = connect.cursor()
 
-    date = cursor.execute(f"SElECT date, message_id "
-                          f"FROM lots ").fetchall()
-
-    for row in date:
+    data = cursor.execute(f"SELECT date, MAX(message_id) AS max_message_id "
+                          f"FROM lots "
+                          f"GROUP BY date; ").fetchall()
+    for row in data:
+        print(row[0], row[1])
         times = datetime.strptime(row[0], '%Y-%m-%d')
-        if (datetime.now() - times) > timedelta(days=days):
+        if times < time_del:
             cursor.execute(f"DELETE FROM lots "
-                           f"WHERE message_id = {row[1]}; ")
+                           f"WHERE message_id <= {row[1]}; ")
 
     connect.commit()
     connect.close()
