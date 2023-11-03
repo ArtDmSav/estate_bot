@@ -5,10 +5,12 @@ from estate_bot.config.data import API_ID, API_HASH, USERNAME
 from estate_bot.database import sqlite_commit_db
 from estate_bot.functions import city_parsing, price_parsing
 from estate_bot.functions.time_count_decorator import time_count
+from estate_bot.functions.translate import to_en, to_ru, to_el
 
 
 @time_count
 def parsing_chat(last_msg_id):
+
     # Start telegram client by telethon
     client = TelegramClient(USERNAME, API_ID, API_HASH, system_version="4.16.30-vxCUSTOM")
     client.start()
@@ -16,11 +18,7 @@ def parsing_chat(last_msg_id):
     # Set data
     offset_id = 0
     limit = 500
-    end_id = 0
-    counter = 0
     target_group = 't.me/estatecyprus'
-    flag_1 = True
-    flag_2 = True
 
     while True:
         # noinspection PyTypeChecker
@@ -33,34 +31,30 @@ def parsing_chat(last_msg_id):
             # retrieving more than 3000 messages will take longer than half a minute (or even more based on
             # previous calls).
             max_id=0,
-            min_id=end_id,  # (int): All the messages with a lower (older) ID or equal to this will be excluded.
+            min_id=last_msg_id,  # (int): All the messages with a lower (older) ID or equal to this will be excluded.
             hash=0
         ))
 
         if not history.messages:
-            sqlite_commit_db.add_msg_end_id()
             client.disconnect()
             return
         messages = history.messages
 
         for message in messages:
             if message.id <= last_msg_id:
-                sqlite_commit_db.add_msg_end_id()
                 client.disconnect()
                 return
 
-            if flag_1:  # save id first message. it's end id for next iteration
-                end_id = message.id
-                flag_1 = False
-                flag_2 = True
-
-            if message.message != '':  # skip message without text (skip photo, video message)
+            if any(message.message):  # skip message without text (skip photo, video message)
 
                 # Call find price func in message (use low register for all text)
                 str_message = str(message.message).lower()
                 price = price_parsing.f_price(str_message)
                 if price == -1:  # If we can't find price, we move to the next message
                     continue
+
+                msg_en = to_en(message.message)
+                msg_ru = to_ru(message.message)
 
                 try:
                     city = city_parsing.parse(message.message.lower())
@@ -69,17 +63,8 @@ def parsing_chat(last_msg_id):
                     continue
 
                 # Add lot to database
-                if flag_2:
-                    flag_2 = False
-                    sqlite_commit_db.write_lots(message.date, city, price, message.id, target_group,
-                                                message.message, end_id)
-                    counter += 1
-                else:
-                    sqlite_commit_db.write_lots(message.date, city, price, message.id, target_group, message.message)
-                    counter += 1
+                sqlite_commit_db.write_lots(message.date, city, price, message.id, target_group, message.message,
+                                            msg_ru, msg_en)
 
-                # Print data for manual check (debug)
-                # print("price = ", price, "€")
-                # print("city = ", city)
-                # print(message.id)
-                # print(message.message)
+        client.disconnect()
+        return
