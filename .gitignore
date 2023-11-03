@@ -5,6 +5,7 @@
 Group_list_for_parsing.txt
 .idea/
 *.db
+/estate_bot/logs/user_history
 
 
 # Byte-compiled / optimized / DLL files
