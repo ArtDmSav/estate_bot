@@ -1,9 +1,8 @@
+bot_telethon 55 any
+
 main.py
 - add async in bot_telethon, send_msg_to_user
 - add autotest
-
-sqlite_commit_db.py
-- del_old_msg() change request to "group by"
 
 autotest
 - lots without price
@@ -11,14 +10,8 @@ autotest
 
 add/change:
 - price only with '+'.GROUP_ID: t.me/estatecyprus MSG_ID: 372250 CITY: Лимассол PRICE: -2000
-- deleted all link with message_end_id
-- translate all msg to en/ru
 - add history users data changes and history sent mst to user
-- add requirements.txt
-- keep login/password/token in .env
 - FSM: memory storage change for redis storage or mongo storage
-- forward msgs in TG bot like forward msgs, not like links
-- check that in one forward msg all files have one sender
 - separate rent and sell lots with markers in db
 - add stop words to control spam and stop messages from people who are looking for an apartment.
     [работа/у сниму ищу ищем заработок  подработка таблетки стаф набор интим 18+ обучение обучиться доход]
