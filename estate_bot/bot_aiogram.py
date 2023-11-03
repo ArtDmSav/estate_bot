@@ -80,7 +80,6 @@ async def restat_bot_en(message: types.Message):
 @dp.message_handler(text='Остановка бота', state='*')
 async def stop_bot(message: types.Message):
     stop_user(message.chat.id)
-    print('stop bot, id user = ', message.chat.id)
     await message.reply("Бот остановлен!\n Для нового поиска нажмите кнопку 'Ввести новые параметры'",
                         reply_markup=restart_bt()
                         )
@@ -89,7 +88,6 @@ async def stop_bot(message: types.Message):
 @dp.message_handler(text='Stopping the bot', state='*')
 async def stop_bot_en(message: types.Message):
     stop_user(message.chat.id)
-    print('stop bot, id user = ', message.chat.id)
     await message.reply("The bot has stopped!\nFor a new search, click the 'Enter new parameters' button",
                         reply_markup=restart_bt_en()
                         )
@@ -163,9 +161,8 @@ async def max_price(message: types.Message, state: FSMContext):
                             f'{data["min_price"]} евро, до {data["max_price"]} евро.\nПодходящие предложения будут '
                             f'поступать в этот чат')
 
-        print(message.chat.id, " = ", message.chat.username)
         write_user(data['city'], int(data['min_price']), int(data['max_price']),
-                   message.chat.id, ACTIVE, last_msg_id(), INACTIVE)
+                   message.chat.id, ACTIVE, last_msg_id(), INACTIVE, message.chat.username)
 
         await message.answer('\n\n\n\nДля ввода новых параметров, нажмите "Ввести новые параметры"',
                              reply_markup=restart_bt())
@@ -176,9 +173,8 @@ async def max_price(message: types.Message, state: FSMContext):
 
         city_ru = await change_city_name(data['city'])
 
-        print(message.chat.id, " = ", message.chat.username)
         write_user(city_ru, int(data['min_price']), int(data['max_price']),
-                   message.chat.id, ACTIVE, last_msg_id(), ACTIVE)
+                   message.chat.id, ACTIVE, last_msg_id(), ACTIVE, message.chat.username)
 
         await message.answer('\n\n\n\nTo enter new parameters, click "Enter new parameters"',
                              reply_markup=restart_bt_en())
@@ -198,7 +194,7 @@ async def change_city_name(data):
     elif data == 'Rest of Cyprus':
         city_ru = 'Остальной Кипр'
     else:
-        city_ru = 'Остальной Кипр'
+        city_ru = 'Кипр'
     return city_ru
 
 
