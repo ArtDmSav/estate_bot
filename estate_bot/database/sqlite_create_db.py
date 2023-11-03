@@ -23,9 +23,10 @@ def create_lots():
                             price INTEGER(7),
                             date DATETIME,
                             message_id INTEGER(7) NOT NULL UNIQUE,
-                            message_end_id INTEGER(7),
                             chat_id TEXT,
-                            msg TEXT(33),
+                            msg TEXT,
+                            msg_en TEXT,
+                            msg_ru TEXT,
                             PRIMARY KEY(message_id)
                         );
                     """)
@@ -47,6 +48,7 @@ def create_users():
                             msg_chat_id VARCHAR(20) UNIQUE,
                             active INTEGER(1),
                             last_msg_id INTEGER(7),
+                            english INTEGER(1),
                             PRIMARY KEY(msg_chat_id)
                         );
                     """)
