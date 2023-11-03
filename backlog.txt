@@ -10,7 +10,6 @@ autotest
 
 add/change:
 - price only with '+'.GROUP_ID: t.me/estatecyprus MSG_ID: 372250 CITY: Лимассол PRICE: -2000
-- add history users data changes and history sent mst to user
 - FSM: memory storage change for redis storage or mongo storage
 - separate rent and sell lots with markers in db
 - add stop words to control spam and stop messages from people who are looking for an apartment.
