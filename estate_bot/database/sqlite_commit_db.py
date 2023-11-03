@@ -7,6 +7,8 @@ from estate_bot.functions.time_count_decorator import time_count
 
 dir_path = Path(__file__).parent.resolve()
 path = dir_path / 'estate.db'
+user_log_path = f"{Path.cwd()}/logs/user_history"
+
 
 
 @time_count
@@ -26,8 +28,8 @@ def write_lots(date, city, price, message_id, chat_id, msg, msg_en=' ', msg_ru='
             cursor.execute(
                 f"INSERT INTO lots (city, price, date, message_id, chat_id, msg, msg_en, msg_ru) "
                 f"VALUES ('{city}', {price}, '{date}', {message_id}, '{chat_id}', "
-                         f"'{msg}', '{msg_en}', '{msg_ru}') "
-                            )
+                f"'{msg}', '{msg_en}', '{msg_ru}') "
+            )
         except ValueError:
             print("sqlite3.OperationalError: ValueError")
         except SyntaxError:
@@ -42,29 +44,30 @@ def write_lots(date, city, price, message_id, chat_id, msg, msg_en=' ', msg_ru='
 
 
 @time_count
-def write_user(city, min_price, max_price, msg_chat_id, active, last_msg_id=1, english=0):
-    print('write user')
+def write_user(city, min_price, max_price, msg_chat_id, active, last_msg_id=1, english=0, chat_username='o'):
     connect = sql.connect(path)
 
     cursor = connect.cursor()
-    print('connect, cursor')
     cursor.execute(f"""SELECT msg_chat_id FROM users WHERE msg_chat_id={msg_chat_id}""")
     if not any(cursor.fetchall()):
-        print('if')
         cursor.execute(
             f"INSERT INTO users (city, min_price, max_price, msg_chat_id, active, last_msg_id, english) "
             f"VALUES ('{city}', {min_price}, {max_price}, {msg_chat_id}, {active}, '{last_msg_id}', {english}) "
-                        )
-        print('commit')
+        )
         connect.commit()
+        with open(f"{user_log_path}/{msg_chat_id}.txt", 'w') as f:
+            f.write(chat_username + '\n')
+            f.write(str(datetime.now()) + '\n')
+            f.write(f"{city}: {min_price} - {max_price}, user_active: {active}, english: {english}\n")
     else:
-        print('else')
-        print((city, min_price, max_price, 1, last_msg_id, english, msg_chat_id))
         cursor.execute(
             f"UPDATE users SET city=?, min_price=?, max_price=?, active=?, last_msg_id=?, english=? WHERE msg_chat_id=?"
             , (city, min_price, max_price, active, last_msg_id, english, msg_chat_id))
-        print('commit2')
         connect.commit()
+        with open(f"{user_log_path}/{msg_chat_id}.txt", 'a') as f:
+            f.writelines(str(datetime.now())+'\n')
+            f.writelines(f"{city}: {min_price} - {max_price} euro, user_active: {active}, english: {english}\n")
+
     connect.close()
 
 
@@ -74,9 +77,12 @@ def stop_user(msg_chat_id):
     cursor = connect.cursor()
 
     cursor.execute(f"UPDATE users SET active=0 WHERE msg_chat_id={msg_chat_id}")
-
     connect.commit()
     connect.close()
+
+    with open(f"{user_log_path}/{msg_chat_id}.txt", 'a') as f:
+        f.write(str(datetime.now()) + '\n')
+        f.write(f"deactivation bot\n")
 
 
 @time_count
@@ -98,7 +104,7 @@ def del_repeating_msg():
 
 @time_count
 def del_old_msg():
-    time_del = (datetime.now()-timedelta(days=DEL_MSG_AFTER_DAY))
+    time_del = (datetime.now() - timedelta(days=DEL_MSG_AFTER_DAY))
 
     connect = sql.connect(path)
     cursor = connect.cursor()
