@@ -22,14 +22,14 @@ def view_user():
 
 
 @time_count
-def active_user():
+def active_user(english):
     active_user_base = []
     connect = sql.connect(path)
     cursor = connect.cursor()
 
     data = cursor.execute("SELECT city, min_price, max_price, msg_chat_id, last_msg_id "
                           "FROM users "
-                          "WHERE active = 1 ")
+                          f"WHERE (active = 1 AND english = {english}) ")
 
     for row in data:
         active_user_base.append(row)
@@ -45,7 +45,7 @@ def request(city, min_price, max_price, last_msg, user_id):
     connect = sql.connect(path)
     cursor = connect.cursor()
 
-    data = cursor.execute(f"SELECT message_id, message_end_id, {user_id}, chat_id, msg "
+    data = cursor.execute(f"SELECT message_id, {user_id}, chat_id, msg_en, msg_ru "
                           f"FROM lots "
                           f"WHERE message_id > {last_msg} "
                           f"    AND city = '{city}' "
