@@ -1,26 +1,13 @@
-import logging
-
 from aiogram import Bot, types, executor
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher import Dispatcher, FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
-from estate_bot.bot.keyboards.tg_keyboards_aiogram import city_name_bt, max_price_bt, min_price_bt, restart_bt, ch_lang
-from estate_bot.bot.keyboards.tg_keyboards_aiogram import city_name_bt_en, max_price_bt_en, min_price_bt_en, \
-    restart_bt_en
-from estate_bot.config.data import BOT_TOKEN, ACTIVE, INACTIVE
-from estate_bot.database.sqlite_commit_db import write_user, stop_user
-from estate_bot.database.sqlite_view_db import last_msg_id
-
-logging.basicConfig(level=logging.DEBUG, filename='logs/bot_aiogram.log',
-                    format='%(levelname)s (%(asctime)s): %(message)s (Line: %(lineno)d) [%(filename)s]',
-                    datefmt='%d/%m/%Y %I:%M:%S', encoding='UTF-8', filemode='w'
-                    )
-logging.warning('warning')
-logging.critical('critical')
-logging.debug('debug')
-logging.info('info')
-logging.error('error')
+from bot.keyboards.tg_keyboards_aiogram import city_name_bt, max_price_bt, min_price_bt, restart_bt, ch_lang
+from bot.keyboards.tg_keyboards_aiogram import city_name_bt_en, max_price_bt_en, min_price_bt_en, restart_bt_en
+from config.data import BOT_TOKEN, ACTIVE, INACTIVE
+from database.sqlite_commit_db import write_user, stop_user
+from database.sqlite_view_db import last_msg_id
 
 
 class ClientStatesGroup(StatesGroup):
@@ -39,13 +26,13 @@ dp = Dispatcher(bot, storage=storage)
 async def start_bot(message: types.Message):
     await ClientStatesGroup.language.set()
     print("msd.msg_id = ", message.message_id)
-    await message.reply("""Доброго времени суток! Данный бот создан для помощи в подборе недвижимости по вашим 
+    await message.reply("""Доброго времени суток! Данный бот создан для помощи в подборе недвижимости по вашим
         параметрам, таким как стоимость и город!
         Вы можете задать диапозон цен от 100 до 999 999 у.е.\n
         А так же выбрать локацию из предложенных: Лимассол, Пафос, Ларнака, Никосия или весь Кипр
         (список локаций постоянно расширяется и вы можете оставить запрос на
         добавления нового города или деревни/ написав сюда @artdmsav)
-        Бот находится на этапе альфа тестирования и возможны следующие нюансы: 
+        Бот находится на этапе альфа тестирования и возможны следующие нюансы:
         - Возможно выбрать только один населеный пункт для поиска
         - Нет возможности сортировки по типу Аренда, Продажа, Покупка
         - Сумма ограничена от 3-х до 6-ти цифр\n
@@ -59,7 +46,7 @@ async def start_bot(message: types.Message):
          - It is possible to select only one locality for search
          - It is not possible to sort by type Rent, Sale, Purchase
          - The amount is limited from 3 to 6 digits\n
-         We are working to eliminate these inconveniences for your comfortable use.\n\n 
+         We are working to eliminate these inconveniences for your comfortable use.\n\n
         Выберите язык. Choose language.""",
                         reply_markup=ch_lang()
                         )
