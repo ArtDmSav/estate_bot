@@ -9,3 +9,4 @@ aiogram~=2.25.1
 Telethon~=1.28.5
 pathlib~=1.0.1
 googletrans~=4.0.0rc1
+sentry~=23.7.1
