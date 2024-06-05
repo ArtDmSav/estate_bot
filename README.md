@@ -1,3 +1,6 @@
+My first study project.
+Legacy
+
 # Telegram Real Estate Message Parser (EN/RU)
 
 <!DOCTYPE html>
