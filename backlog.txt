@@ -20,6 +20,9 @@ add/change:
 - crontab/taskiq/celery
 - add func to send lot with user param for last {x} days
 
+
+
+
 advertisement for realtors (only 50 euro per week):
     - your visit card will send 10 times per day every people who
         use bot free
